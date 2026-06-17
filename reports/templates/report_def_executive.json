@@ -13,9 +13,9 @@
       "blocks": [
         { "type": "kpi_cards", "items": [
           { "label": "신차 등록", "ref": "MKT_CAR_SALES.new", "trend": "▲ 25년래 최고 (+8.3%)", "trendCls": "up" },
-          { "label": "리스 시장규모", "ref": "MKT_AF_SIZE", "fmt": "119.5 bn PLN", "trend": "▲ CAGR 11.3%", "trendCls": "up" },
-          { "label": "신차 금융침투율", "ref": "MKT_PEN_NEW", "fmt": "~50%", "note": "리스+렌탈 (법인 중심)" },
-          { "label": "법인 구매비중", "fmt": "69%", "note": "B2B 시장 구조" }
+          { "label": "리스 시장규모", "ref": "MKT_AF_SIZE", "trend": "▲ CAGR 11.3%", "trendCls": "up" },
+          { "label": "신차 금융침투율", "ref": "MKT_PEN_NEW", "note": "리스+렌탈 (법인 중심)" },
+          { "label": "법인 구매비중", "ref": "MKT_SEG_RETAIL_CORP.corp", "note": "B2B 시장 구조" }
         ]},
         { "type": "chart_grid", "cols": 2, "charts": [
           { "chart": "donut", "title": "구매 주체 (폴란드)", "sub": "법인이 신차의 69% 구매 — B2B", "segs": [{"v":69,"label":"법인"},{"v":31,"label":"개인"}] },

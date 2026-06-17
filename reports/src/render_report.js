@@ -62,8 +62,28 @@ function renderBlock(b){
         + (b.blocks||[]).map(renderBlock).join("") + `</div>`;
     case "kpi_cards":
       return `<div class="cards">`+b.items.map(c=>{
-        let big=c.fmt; if(!big && c.ref){const it=itemMap[c.ref.split(".")[0]]; big=c.ref.includes(".")?(it?.value_normalized?.[c.ref.split(".")[1]]||"").toLocaleString():it?.value_raw||"";}
-        return `<div class="card"><div class="label">${esc(c.label)}</div><div class="big">${esc(big)}</div>`
+        let big=c.fmt;
+        if(!big && c.ref){
+          const refParts=c.ref.split(".");
+          const it=itemMap[refParts[0]];
+          if(it){
+            const vn=it.value_normalized;
+            if(refParts.length>1 && vn && typeof vn==="object"){
+              const sub=vn[refParts[1]];
+              big=sub!=null?Number(sub).toLocaleString():"";
+            } else if(vn && typeof vn==="object"){
+              if(vn.value_pln_bn) big=vn.value_pln_bn+" bn PLN";
+              else if(vn.value_gbp_bn) big="£"+vn.value_gbp_bn+"bn";
+              else if(vn.value_usd_bn) big="$"+vn.value_usd_bn+"bn";
+              else if(vn.new) big=Number(vn.new).toLocaleString();
+              else big=it.value_raw||"";
+            } else if(typeof vn==="number"){
+              if(it.data_type==="PERCENT") big=vn+"%";
+              else big=Number(vn).toLocaleString();
+            } else big=it.value_raw||"";
+          }
+        }
+        return `<div class="card"><div class="label">${esc(c.label)}</div><div class="big">${esc(big||"")}</div>`
           +(c.trend?`<div class="trend ${c.trendCls||''}">${esc(c.trend)}</div>`:"")
           +(c.note?`<div class="note">${esc(c.note)}</div>`:"")+`</div>`;
       }).join("")+`</div>`;

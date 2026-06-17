@@ -2,19 +2,27 @@
  * 보고서 렌더러 (render_report.js)
  * 입력: 보고서 정의 JSON + country JSON + 엔진 결과(viz_data)
  * 출력: HTML
- * 사용: node render_report.js <정의JSON> <출력HTML>
+ * 사용: node reports/src/render_report.js <정의JSON> <출력HTML>
  */
 const fs = require("fs");
-const mat = require("./semantic_matrix.js");
+const path = require("path");
+const ENGINE = path.join(__dirname, "..", "..", "engine");
+const DATA = path.join(__dirname, "..", "..", "data");
+const TEMPLATES = path.join(__dirname, "..", "templates");
+const mat = require(path.join(ENGINE, "semantic_matrix.js"));
 globalThis.SEMANTIC_MATRIX = mat.SEMANTIC_MATRIX;
-const eng = fs.readFileSync("similarity.js","utf8").replace(/if \(typeof module[\s\S]*$/,"");
+const eng = fs.readFileSync(path.join(ENGINE, "similarity.js"),"utf8").replace(/if \(typeof module[\s\S]*$/,"");
 eval(eng);
 
-const defFile = process.argv[2] || "report_def_executive.json";
+const defFile = process.argv[2] || path.join(TEMPLATES, "report_def_executive.json");
 const outFile = process.argv[3] || "out_report.html";
 
 const def = JSON.parse(fs.readFileSync(defFile,"utf8"));
-const data = JSON.parse(fs.readFileSync("countries_UK_PL.json","utf8"));
+// 국가 데이터는 코드별 파일(GB.json/PL.json)로 분리 저장 → countries 배열로 조립
+const data = { countries: [
+  JSON.parse(fs.readFileSync(path.join(DATA, "GB.json"),"utf8")),
+  JSON.parse(fs.readFileSync(path.join(DATA, "PL.json"),"utf8")),
+] };
 const byCode = {}; data.countries.forEach(c=>byCode[c.country_code]=c);
 const target = byCode[def.target], base = byCode[def.base];
 const result = compareCountries(target, base);
@@ -135,8 +143,8 @@ const tocHtml = def.toc ? `<nav class="toc"><div class="tt">목차</div>`
   + def.sections.filter(s=>s.type==="category_full").map(s=>`<a href="#cat-${s.category}"><span class="ic">${s.icon}</span>${s.name}</a>`).join("")
   + `<a href="#checklist"><span class="ic" style="background:var(--amber)">✓</span>준비 체크리스트</a></nav>` : "";
 
-const chartsJs = fs.readFileSync("charts.js","utf8").replace(/if\(typeof module[\s\S]*$/,"");
-const shell = fs.readFileSync("report_shell.html","utf8");
+const chartsJs = fs.readFileSync(path.join(__dirname, "charts.js"),"utf8").replace(/if\(typeof module[\s\S]*$/,"");
+const shell = fs.readFileSync(path.join(TEMPLATES, "report_shell.html"),"utf8");
 const html = shell
   .replace(/__TITLE__/g, esc(def.title))
   .replace("__SUBTITLE__", esc(def.subtitle))

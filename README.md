@@ -19,16 +19,21 @@ engine/      유사도 엔진
 └─ semantic_matrix.js    범주형 코드값 유사도 (JS 버전)
 
 reports/     보고서 생성
-├─ render_report.js          정의 JSON + 데이터 → HTML (Node용)
-├─ report_def_executive.json 경영진용 구성 정의
-├─ report_def_detailed.json  실무용 구성 정의
-├─ charts.js                 SVG 차트 라이브러리
-├─ report_shell.html         공용 HTML 셸
-├─ 폴란드_경영진보고서.html    생성 결과 (경영진용)
-└─ 폴란드_상세보고서.html      생성 결과 (실무용)
+├─ src/        코드
+│  ├─ render_report.js          정의 JSON + 데이터 → HTML (Node용)
+│  └─ charts.js                 SVG 차트 라이브러리
+├─ templates/  구성 정의·셸
+│  ├─ report_def_executive.json 경영진용 구성 정의
+│  ├─ report_def_detailed.json  실무용 구성 정의
+│  └─ report_shell.html         공용 HTML 셸
+└─ output/     생성 결과
+   ├─ 폴란드_경영진보고서.html    경영진용
+   └─ 폴란드_상세보고서.html      실무용
 
-docs/        설계·조사 문서
-├─ 01_설계문서.md ~ 06_점수계산_상세산식.md
+design/      설계 문서
+└─ 01_설계문서.md ~ 06_점수계산_상세산식.md
+
+research/     국가 조사 문서
 ├─ 07_폴란드_상세조사.md / 08_영국_상세조사.md
 └─ 국가조사_프롬프트.md       새 나라 조사용 재사용 프롬프트
 
@@ -42,20 +47,20 @@ README_통합가이드.md   대시보드 연결 방법 (데이터 읽기·엔진
 
 ```
 조사 → data/{국가}.json (정규화)
-        ↓ engine/similarity.js + semantic_matrix.js
+        ↓ engine/similarity.js + engine/semantic_matrix.js
        점수·판정 (종합·카테고리·게이트·킬스위치)
-        ↓ reports/render_report.js + report_def_*.json + charts.js
-       HTML 보고서 (경영진용 / 실무용)
+        ↓ reports/src/render_report.js + templates/report_def_*.json + src/charts.js
+       reports/output/ HTML 보고서 (경영진용 / 실무용)
 ```
 
 ## 빠른 시작
 
 ```bash
-# 엔진 단독 실행 (Node)
-cd engine && node similarity.js   # 영국 기준 폴란드 진단 출력
+# 엔진 단독 실행 (Node) — 어느 경로에서 실행해도 동작
+node engine/similarity.js   # 영국 기준 폴란드 진단 출력
 
 # 보고서 생성 (Node)
-cd reports && node render_report.js report_def_executive.json out.html
+node reports/src/render_report.js reports/templates/report_def_executive.json reports/output/out.html
 ```
 
 대시보드 연결은 `README_통합가이드.md` 참조. 로컬 실행 시 `file://` 더블클릭은 CORS에 막히므로 로컬 서버(`python3 -m http.server`)로 띄울 것.

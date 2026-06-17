@@ -195,8 +195,11 @@ function printReport(r) {
 }
 if (typeof module !== "undefined" && require.main === module) {
   const fs = require("fs");
-  const data = JSON.parse(fs.readFileSync("countries_UK_PL.json", "utf8"));
-  const [uk, pl] = data.countries;
+  const path = require("path");
+  const DATA = path.join(__dirname, "..", "data");
+  // 국가 데이터는 코드별 파일(GB.json/PL.json)로 분리 저장
+  const uk = JSON.parse(fs.readFileSync(path.join(DATA, "GB.json"), "utf8"));
+  const pl = JSON.parse(fs.readFileSync(path.join(DATA, "PL.json"), "utf8"));
   console.log(printReport(compareCountries(pl, uk)));
 }
 if (typeof window !== "undefined") {
